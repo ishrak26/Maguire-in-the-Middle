@@ -32,22 +32,22 @@ int main(void)
 		{0,0,0,1,1,1,1,1,1,1,1,1,1,0,0,0}
 	};
 	int i, j;
-	DDRB = 0xFF;
-	DDRD = 0xFF;
+	DDRB = 0xFF; // row
+	DDRD = 0xFF; // column
 	
     while (1) 
     {
 		for (i = 0; i < 16; i++) {
-			PORTD = i;
+			PORTB = i;
 			for (j = 0; j < 16; j++) {
-				if (mat[j][i]) {
-					// make row 0 (common cathode)
-					PORTB = j;
+				if (mat[i][j]) {
+					// make column 0 (common anode)
+					PORTD = j;
 				}
 				else {
-					PORTB = 16;
+					PORTD = 16;
 				}
-				_delay_us(200);
+				_delay_ms(200);
 			}
 			
 		}
