@@ -15,11 +15,23 @@
 #define PADDLE_LEN 4
 #define MAG_SIZE 2
 
-/* directions */
+/* 
+	directions 
+	corresponding bit will be set
+	other bits will be reset
+*/
 #define UP 0
 #define RIGHT 1
 #define DOWN 2
 #define LEFT 3
+/*
+	for up and right, direction will be 0b0011
+	for down and left, direction will be 0b1100 and so on
+	for setting up, direction |= (1<<UP);
+	for setting left, direction |= (1<<LEFT); and so on
+	
+	initially assign 0 to direction, and then set what's needed
+*/
 
 struct Ball {
 	/*
@@ -113,7 +125,12 @@ void playMusic() {
 	
 }
 
-/* all collisions and gameplay logic will be handled later */
+/* assigned to TBA */
+void displayLCD() {
+	
+}
+
+/* all collisions/interceptions and gameplay logic will be handled later */
 
 /* initialize all ports */
 void init() {
