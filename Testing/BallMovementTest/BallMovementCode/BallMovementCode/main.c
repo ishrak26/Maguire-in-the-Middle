@@ -65,7 +65,7 @@ struct Maguire {
 	int x, y;
 } maguire;
 
-unsigned char matrix[MAT_ROW][MAT_COL];
+unsigned char matrix[16][16];
 
 void displaytMatrix() {
 	/*
@@ -73,19 +73,19 @@ void displaytMatrix() {
 		will adjust for bi color later
 	*/
 	int i, j;
-	for (i = 0; i < MAT_ROW; i++) {
-		// make this row 1
-		PORTB = i;
-		for (j = 0; j < MAT_COL; j++) {
-			if (matrix[i][j]) {
-				// make this column 0 (common anode)
-				PORTD = j;
+	for (i = 0; i < MAT_COL; i++) {
+		PORTD = i;
+		for (j = 0; j < MAT_ROW; j++) {
+			if (matrix[j][i]) {
+				// make row 0 (common cathode)
+				PORTB = j;
 			}
 			else {
-				// disable both decoders to set all 1 for this column
-				PORTD = 16;
+				PORTB = 16;
 			}
+			_delay_ms(1);
 		}
+		
 	}
 }
 
@@ -105,7 +105,8 @@ void moveBall() {
 	matrix[ball.x][ball.y] = 0;
 	ball.x += ball.dx;
 	ball.y += ball.dy;
-	matrix[ball.x][ball.y] = 1;	
+	matrix[ball.x][ball.y] = 1;
+	
 }
 
 /* assigned to Anonto */
@@ -148,19 +149,16 @@ void displayLCD() {
 
 /* all collisions/interceptions and gameplay logic will be handled later */
 
-// initialize ball
-void initBall() {
+/* initialize all ports */
+void init() {
+	DDRB = 0xFF; // matrix row
+	DDRD = 0xFF; // matrix column
+
 	ball.dx = BALL_SPEED;
 	ball.dy = BALL_SPEED;
 	ball.x = 2;
 	ball.y = 3;
 	matrix[ball.x][ball.y] = 1;
-}
-
-/* initialize all ports */
-void init() {
-	DDRB = 0xFF; // matrix row
-	DDRD = 0xFF; // matrix column
 	// TODO: set up other ports
 }
 
@@ -170,14 +168,10 @@ int main(void)
 	init();
     while (1) 
     {
+		
 		displaytMatrix();
-		for (int i = 0; i < 4; i++) {
-			// assign joystick MUX selection bit
-			takeJoystickInput();
-			displaytMatrix();
-		}
-		takeGyroscopeInput();
-		displaytMatrix();
+		moveBall();
+		_delay_ms(200);
     }
 }
 
