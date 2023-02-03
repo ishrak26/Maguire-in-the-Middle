@@ -171,7 +171,11 @@ int main(void)
 		for (int i = 0; i < 50; i++) {
 			displaytMatrix();
 		}
-		movePaddle(0b0001, 2);
+		movePaddle(1<<DOWN, 0);
+		movePaddle(1<<LEFT, 1);
+		movePaddle(1<<UP, 2);
+		movePaddle(1<<RIGHT, 3);
+		movePaddle(1<<LEFT, 0);
 		//moveBall();
 		//moveMaguire(1, 1);
     }

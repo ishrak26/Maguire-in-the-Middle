@@ -52,7 +52,7 @@ void update_TopPaddle(int direction){
 	}
 	
 	//Right
-	if(((direction & (1<<RIGHT)) != 0) && (paddles[0].y != MAT_COL-1)){
+	if(((direction & (1<<RIGHT)) != 0) && (paddles[0].y != MAT_COL-PADDLE_LEN)){
 	    paddles[0].y = paddles[0].y + 1;
 	}
 	
@@ -91,7 +91,7 @@ void update_RightPaddle(int direction){
 	}
 	
 	//Down
-	if(((direction & (1<<DOWN)) != 0) && (paddles[1].x != MAT_ROW-1)){
+	if(((direction & (1<<DOWN)) != 0) && (paddles[1].x != MAT_ROW-PADDLE_LEN)){
 		paddles[1].x = paddles[1].x + 1;
 	}
 	
@@ -114,12 +114,12 @@ void update_BottomPaddle(int direction){
 	}
 	
 	//Up
-	if ((direction & (1<<UP)) && (paddles[2].x > MAT_ROW-MAX_PADDLE_MOVEMENT)){
+	if(((direction & (1<<UP)) != 0) && (paddles[2].x > MAT_ROW-MAX_PADDLE_MOVEMENT)){
 		paddles[2].x = paddles[2].x - 1;
 	}
 	
 	//Right
-    if(((direction & (1<<RIGHT)) != 0) && (paddles[2].y != MAT_COL-1)){
+	if(((direction & (1<<RIGHT)) != 0) && (paddles[2].y != MAT_COL-PADDLE_LEN)){
 		paddles[2].y = paddles[2].y + 1;
 	}
 	
@@ -157,7 +157,7 @@ void update_LeftPaddle(int direction){
 	}
 	
 	//Down
-	if(((direction & (1<<DOWN)) != 0) && (paddles[3].x != MAT_COL-1)){
+	if(((direction & (1<<DOWN)) != 0) && (paddles[3].x != MAT_COL-PADDLE_LEN)){
 		paddles[3].x = paddles[3].x + 1;
 	}
 	
