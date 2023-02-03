@@ -30,12 +30,12 @@ void init_paddle() {
 	paddles[1].y = 15;
 	
 	//bottom
-	paddles[0].x = 15;
-	paddles[0].y = 6;
+	paddles[2].x = 15;
+	paddles[2].y = 6;
 	
 	//left
-	paddles[0].x = 6;
-	paddles[0].y = 0;
+	paddles[3].x = 6;
+	paddles[3].y = 0;
 	
 }
 
@@ -77,7 +77,7 @@ void update_TopPaddle(int direction){
 void update_RightPaddle(int direction){
 	//Updating value to zero
 	for(int i = 0; i<PADDLE_LEN; i++){
-		matrix[paddles[0].x+i][paddles[0].y] = 0;
+		matrix[paddles[1].x+i][paddles[0].y] = 0;
 	}
 	
 	//Up
