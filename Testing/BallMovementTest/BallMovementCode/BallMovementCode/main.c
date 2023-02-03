@@ -121,7 +121,29 @@ void moveMaguire(int dx, int dy) {
 		dx displacement along x-axis
 		dy displacement along y-axis
 	*/
+	if ((maguire.x == 0 && dx == -1) || (maguire.x+MAG_SIZE == MAT_ROW && dx == 1)) {
+		// hit the top/bottom wall
+		dx = 0;
+	}
+	if ((maguire.y == 0 && dy == -1) || (maguire.y+MAG_SIZE == MAT_COL && dy == 1)) {
+		// hit the left/right wall
+		dy = 0;
+	}
 	
+	for (int i = 0; i < MAG_SIZE; i++) {
+		for (int j = 0; j < MAG_SIZE; j++) {
+			matrix[maguire.x+i][maguire.y+j] = 0;
+		}
+	}
+	
+	maguire.x += dx;
+	maguire.y += dy;
+	
+	for (int i = 0; i < MAG_SIZE; i++) {
+		for (int j = 0; j < MAG_SIZE; j++) {
+			matrix[maguire.x+i][maguire.y+j] = 1;
+		}
+	}
 }
 
 /* assigned to Farhan, Akash */
@@ -156,9 +178,11 @@ void init() {
 
 	ball.dx = BALL_SPEED;
 	ball.dy = BALL_SPEED;
-	ball.x = 2;
-	ball.y = 3;
-	matrix[ball.x][ball.y] = 1;
+	//ball.x = 2;
+	//ball.y = 3;
+	//matrix[ball.x][ball.y] = 1;
+	maguire.x = 2;
+	maguire.y = 3;
 	// TODO: set up other ports
 }
 
@@ -170,7 +194,8 @@ int main(void)
     {
 		
 		displaytMatrix();
-		moveBall();
+		//moveBall();
+		moveMaguire(1, 1);
 		_delay_ms(200);
     }
 }
