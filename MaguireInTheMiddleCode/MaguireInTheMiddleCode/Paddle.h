@@ -52,17 +52,17 @@ void update_TopPaddle(int direction){
 	}
 	
 	//Right
-	else if(((direction & (1<<RIGHT)) != 0) && (paddles[0].y != MAT_COL-1)){
+	if(((direction & (1<<RIGHT)) != 0) && (paddles[0].y != MAT_COL-1)){
 	    paddles[0].y = paddles[0].y + 1;
 	}
 	
 	//Down
-	else if(((direction & (1<<DOWN)) != 0) && (paddles[0].x < MAX_PADDLE_MOVEMENT-1)){
+	if(((direction & (1<<DOWN)) != 0) && (paddles[0].x < MAX_PADDLE_MOVEMENT-1)){
 	    paddles[0].x = paddles[0].x + 1;
 	}
 	
 	//Left
-	else if(((direction & (1<<LEFT)) != 0) && (paddles[0].y != 0)){
+	if(((direction & (1<<LEFT)) != 0) && (paddles[0].y != 0)){
 	    paddles[0].y = paddles[0].y - 1;
 	}
 	
@@ -86,17 +86,17 @@ void update_RightPaddle(int direction){
 	}
 	
 	//Right
-	else if(((direction & (1<<RIGHT)) != 0) && (paddles[0].y != 0)){
+	if(((direction & (1<<RIGHT)) != 0) && (paddles[0].y != 0)){
 		paddles[0].y = paddles[0].y + 1;
 	}
 	
 	//Down
-	else if(((direction & (1<<DOWN)) != 0) && (paddles[0].x != MAT_ROW-1)){
+	if(((direction & (1<<DOWN)) != 0) && (paddles[0].x != MAT_ROW-1)){
 		paddles[0].x = paddles[0].x + 1;
 	}
 	
 	//Left
-	else if(((direction & (1<<LEFT)) != 0) && (paddles[0].y > MAT_COL-MAX_PADDLE_MOVEMENT)){
+	if(((direction & (1<<LEFT)) != 0) && (paddles[0].y > MAT_COL-MAX_PADDLE_MOVEMENT)){
 		paddles[0].y = paddles[0].y - 1;
 	}
 	
@@ -119,17 +119,17 @@ void update_BottomPaddle(int direction){
 	}
 	
 	//Right
-	else if(((direction & (1<<RIGHT)) != 0) && (paddles[2].y != MAT_COL-1)){
+	if(((direction & (1<<RIGHT)) != 0) && (paddles[2].y != MAT_COL-1)){
 		paddles[2].y = paddles[2].y + 1;
 	}
 	
 	//Down
-	else if(((direction & (1<<DOWN)) != 0) && (paddles[2].x != 0)){
+	if(((direction & (1<<DOWN)) != 0) && (paddles[2].x != 0)){
 		paddles[2].x = paddles[2].x + 1;
 	}
 	
 	//Left
-	else if(((direction & (1<<LEFT)) != 0) && (paddles[2].y != 0)){
+	if(((direction & (1<<LEFT)) != 0) && (paddles[2].y != 0)){
 		paddles[2].y = paddles[2].y - 1;
 	}
 	
@@ -152,17 +152,17 @@ void update_LeftPaddle(int direction){
 	}
 	
 	//Right
-	else if(((direction & (1<<RIGHT)) != 0) && (paddles[3].y < MAX_PADDLE_MOVEMENT-1)){
+	if(((direction & (1<<RIGHT)) != 0) && (paddles[3].y < MAX_PADDLE_MOVEMENT-1)){
 		paddles[3].y = paddles[3].y + 1;
 	}
 	
 	//Down
-	else if(((direction & (1<<DOWN)) != 0) && (paddles[3].x != MAT_COL-1)){
+	if(((direction & (1<<DOWN)) != 0) && (paddles[3].x != MAT_COL-1)){
 		paddles[3].x = paddles[3].x + 1;
 	}
 	
 	//Left
-	else if(((direction & (1<<LEFT)) != 0) && (paddles[3].y != 0)){
+	if(((direction & (1<<LEFT)) != 0) && (paddles[3].y != 0)){
 		paddles[3].y = paddles[3].y - 1;
 	}
 	
