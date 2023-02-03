@@ -104,14 +104,6 @@ void moveMaguire(int dx, int dy) {
 	}
 }
 
-/* assigned to Farhan, Akash */
-void takeJoystickInput() {
-	/*
-		just take the current joystick input
-		joystick MUX selection bit will be handled by the caller 
-	*/
-}
-
 /* assigned to Saffat, Farhan */
 void takeGyroscopeInput() {
 	
