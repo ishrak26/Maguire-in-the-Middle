@@ -1,38 +1,7 @@
 /* assigned to Anonto */
+#include "def.h"
 
-
-#define F_CPU 1000000
-
-#include <avr/io.h>
-#include <util/delay.h>
-
-#define MAT_ROW 16
-#define MAT_COL 16
-#define PADDLE_LEN 5
-#define MAG_SIZE 2
-#define MAX_PADDLE_MOVEMENT 3
-
-
-/* 
-	directions 
-	corresponding bit will be set
-	other bits will be reset
-*/
-#define UP 0
-#define RIGHT 1
-#define DOWN 2
-#define LEFT 3
-/*
-	for up and right, direction will be 0b0011
-	for down and left, direction will be 0b1100 and so on
-	for setting up, direction |= (1<<UP);
-	for setting left, direction |= (1<<LEFT); and so on
-	
-	initially assign 0 to direction, and then set what's needed
-*/
-unsigned char matrix[MAT_ROW][MAT_COL];
-
-
+extern unsigned char matrix[MAT_ROW][MAT_COL];
 
 struct Paddle {
 	/*
@@ -53,23 +22,22 @@ struct Paddle {
 
 void init_paddle() {
 	//top
-	paddles[0].x = 0
-	paddles[0].y = 6
+	paddles[0].x = 0;
+	paddles[0].y = 6;
 	
 	//right
-	paddles[1].x = 6
-	paddles[1].y = 15
+	paddles[1].x = 6;
+	paddles[1].y = 15;
 	
 	//bottom
-	paddles[0].x = 15
-	paddles[0].y = 6
+	paddles[0].x = 15;
+	paddles[0].y = 6;
 	
 	//left
-	paddles[0].x = 6
-	paddles[0].y = 0
+	paddles[0].x = 6;
+	paddles[0].y = 0;
 	
 }
-
 
 void update_TopPaddle(int direction){
 	
@@ -207,15 +175,15 @@ void update_LeftPaddle(int direction){
 void movePaddle(int direction, int idx) {
 	/* move paddle[idx] 1 unit along the direction */
 	if(idx == 0){
-		update_TopPaddle(int direction);
+		update_TopPaddle(direction);
 	}
 	else if(idx == 1){
-		update_RightPaddle(int direction);
+		update_RightPaddle(direction);
 	}
 	else if(idx == 2){
-		update_BottomPaddle(int direction);
+		update_BottomPaddle(direction);
 	}
 	else if(idx == 3){
-		update_LeftPaddle(int direction);
+		update_LeftPaddle(direction);
 	}
 }

@@ -9,31 +9,11 @@
 
 #include <avr/io.h>
 #include <util/delay.h>
+#include "def.h"
 
-#define MAT_ROW 16
-#define MAT_COL 16
-#define PADDLE_LEN 4
-#define MAG_SIZE 2
+#include "Paddle.h"
 
-#define BALL_SPEED 1
-
-/* 
-	directions 
-	corresponding bit will be set
-	other bits will be reset
-*/
-#define UP 0
-#define RIGHT 1
-#define DOWN 2
-#define LEFT 3
-/*
-	for up and right, direction will be 0b0011
-	for down and left, direction will be 0b1100 and so on
-	for setting up, direction |= (1<<UP);
-	for setting left, direction |= (1<<LEFT); and so on
-	
-	initially assign 0 to direction, and then set what's needed
-*/
+unsigned char matrix[MAT_ROW][MAT_COL];
 
 struct Ball {
 	/*
@@ -44,28 +24,12 @@ struct Ball {
 	int dx, dy;		
 } ball;
 
-struct Paddle {
-	/*
-		(x, y) is the leftmost coordinate of the paddle
-	*/
-	int x, y;
-} paddles[4];
-/*
-	paddle indices are given as follows:
-	top --> 0
-	right --> 1
-	bottom --> 2
-	left --> 3
-*/
-
 struct Maguire {
 	/*
 		(x, y) is the bottom-left coordinate of the Maguire
 	*/
 	int x, y;
 } maguire;
-
-unsigned char matrix[MAT_ROW][MAT_COL];
 
 void displaytMatrix() {
 	/*
@@ -106,11 +70,6 @@ void moveBall() {
 	ball.x += ball.dx;
 	ball.y += ball.dy;
 	matrix[ball.x][ball.y] = 1;	
-}
-
-/* assigned to Anonto */
-void movePaddle(int direction, int idx) {
-	/* move paddle[idx] 1 unit along the direction */ 
 }
 
 /* assigned to Ishrak */
@@ -196,8 +155,10 @@ void init() {
 	DDRD = 0xFF; // matrix column
 	// TODO: set up other ports
 	
+	init_paddle();
+	
 	//initBall();
-	initMaguire();
+	//initMaguire();
 }
 
 int main(void)
@@ -210,8 +171,9 @@ int main(void)
 		for (int i = 0; i < 50; i++) {
 			displaytMatrix();
 		}
+		movePaddle(0b0001, 2);
 		//moveBall();
-		moveMaguire(1, 1);
+		//moveMaguire(1, 1);
     }
 }
 
