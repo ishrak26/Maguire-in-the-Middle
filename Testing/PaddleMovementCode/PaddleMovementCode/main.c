@@ -37,19 +37,19 @@ void displaytMatrix() {
 		will adjust for bi color later
 	*/
 	int i, j;
-	for (i = 0; i < MAT_ROW; i++) {
-		// make this row 1
-		PORTB = i;
-		for (j = 0; j < MAT_COL; j++) {
-			if (matrix[i][j]) {
-				// make this column 0 (common anode)
-				PORTD = j;
+	for (i = 0; i < MAT_COL; i++) {
+		PORTD = i;
+		for (j = 0; j < MAT_ROW; j++) {
+			if (matrix[j][i]) {
+				// make row 0 (common cathode)
+				PORTB = j;
 			}
 			else {
-				// disable both decoders to set all 1 for this column
-				PORTD = 16;
+				PORTB = 16;
 			}
+			_delay_ms(1);
 		}
+		
 	}
 }
 
@@ -102,6 +102,14 @@ void moveMaguire(int dx, int dy) {
 			matrix[maguire.x+i][maguire.y+j] = 1;
 		}
 	}
+}
+
+/* assigned to Farhan, Akash */
+void takeJoystickInput() {
+	/*
+		just take the current joystick input
+		joystick MUX selection bit will be handled by the caller 
+	*/
 }
 
 /* assigned to Saffat, Farhan */
@@ -160,14 +168,13 @@ int main(void)
     while (1) 
     {
 		
-		for (int i = 0; i < 50; i++) {
-			displaytMatrix();
-		}
-		movePaddle(1<<DOWN, 0);
-		movePaddle(1<<LEFT, 1);
+		
+		displaytMatrix();
 		movePaddle(1<<UP, 2);
+		movePaddle(1<<RIGHT, 0);
+		movePaddle(1<<LEFT, 1);
 		movePaddle(1<<RIGHT, 3);
-		movePaddle(1<<LEFT, 0);
+		_delay_ms(200);
 		//moveBall();
 		//moveMaguire(1, 1);
     }
