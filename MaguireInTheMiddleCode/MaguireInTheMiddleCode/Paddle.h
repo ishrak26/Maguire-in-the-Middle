@@ -27,10 +27,10 @@ void init_paddle() {
 	
 	//right
 	paddles[1].x = 6;
-	paddles[1].y = MAT_COL;
+	paddles[1].y = MAT_COL-1;
 	
 	//bottom
-	paddles[2].x = MAT_ROW;
+	paddles[2].x = MAT_ROW-1;
 	paddles[2].y = 6;
 	
 	//left
