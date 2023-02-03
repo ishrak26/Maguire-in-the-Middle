@@ -91,12 +91,12 @@ void displaytMatrix() {
 
 /* assigned to Ishrak */
 void moveBall() {
-	if ((ball.x == 0 && ball.dx == -1) || (ball.x == MAT_ROW-1 && ball.dx == 1)) {
+	if ((ball.x == 0 && ball.dx < 0) || (ball.x == MAT_ROW-1 && ball.dx > 0)) {
 		// hit the top/bottom wall
 		// reflect
 		ball.dx = -ball.dx;
 	}
-	if ((ball.y == 0 && ball.dy == -1) || (ball.y == MAT_COL-1 && ball.dy == 1)) {
+	if ((ball.y == 0 && ball.dy < 0) || (ball.y == MAT_COL-1 && ball.dy > 0)) {
 		// hit the left/right wall
 		// reflect
 		ball.dy = -ball.dy;
@@ -196,7 +196,7 @@ void init() {
 	DDRD = 0xFF; // matrix column
 	// TODO: set up other ports
 	
-	initBall();
+	//initBall();
 	initMaguire();
 }
 
@@ -206,14 +206,12 @@ int main(void)
 	init();
     while (1) 
     {
-		displaytMatrix();
-		for (int i = 0; i < 4; i++) {
-			// assign joystick MUX selection bit
-			takeJoystickInput();
+		
+		for (int i = 0; i < 50; i++) {
 			displaytMatrix();
 		}
-		takeGyroscopeInput();
-		displaytMatrix();
+		//moveBall();
+		moveMaguire(1, 1);
     }
 }
 
