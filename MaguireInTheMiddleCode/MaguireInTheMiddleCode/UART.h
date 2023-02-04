@@ -21,10 +21,9 @@ void uart_send(unsigned char data){
 	while ((UCSRA & (1<<UDRE)) == 0x00);
 	UDR = data;
 }
-int uart_receive(void){
+unsigned char uart_receive(void){
 	while ((UCSRA & (1<<RXC)) == 0x00);
-	unsigned char ret = UDR;
-	return int(ret);
+	return UDR;
 }
 
 #endif /* UART_H_ */

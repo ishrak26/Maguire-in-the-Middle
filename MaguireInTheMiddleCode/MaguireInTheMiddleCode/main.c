@@ -81,11 +81,11 @@ void moveMaguire(int dx, int dy) {
 		dx displacement along x-axis
 		dy displacement along y-axis
 	*/
-	if ((maguire.x == 0 && dx == -1) || (maguire.x+MAG_SIZE == MAT_ROW && dx == 1)) {
+	if ((maguire.x + dx < 0) || (maguire.x + MAG_SIZE-1 + dx >= MAT_ROW)) {
 		// hit the top/bottom wall
 		dx = 0;
 	}
-	if ((maguire.y == 0 && dy == -1) || (maguire.y+MAG_SIZE == MAT_COL && dy == 1)) {
+	if ((maguire.y + dy < 0) || (maguire.y + MAG_SIZE-1 + dy >= MAT_COL)) {
 		// hit the left/right wall
 		dy = 0;
 	}
@@ -109,10 +109,25 @@ void moveMaguire(int dx, int dy) {
 /* assigned to Saffat, Farhan */
 void takeGyroscopeInput() {
 	uart_send('g');
-	_delay_ms(200);
-	int dx = uart_receive();
-	int dy = uart_receive();
-	moveMaguire(dx, dy);
+	_delay_ms(10);
+	for (int i = 0; i < 20; i++) {
+		displaytMatrix();
+	}
+	unsigned char dxr = uart_receive();
+	for (int i = 0; i < 20; i++) {
+		displaytMatrix();
+	}
+	//_delay_ms(200);
+	unsigned char dyr = uart_receive();
+	for (int i = 0; i < 20; i++) {
+		displaytMatrix();
+	}
+	//_delay_ms(200);
+	int dx = dxr;
+	int dy = dyr;
+	moveMaguire(dx-5, dy-5);
+	//uart_send('f');
+	//_delay_ms(200);
 }
 
 /* assigned to Akash */
@@ -138,8 +153,8 @@ void initBall() {
 
 // initialize ball
 void initMaguire() {
-	maguire.x = 2;
-	maguire.y = 3;
+	maguire.x = 3;
+	maguire.y = 8;
 	for (int i = 0; i < MAG_SIZE; i++) {
 		for (int j = 0; j < MAG_SIZE; j++) {
 			matrix[maguire.x+i][maguire.y+j] = 1;
@@ -157,9 +172,9 @@ void init() {
 	_delay_ms(1000);
 	
 	init_paddle();
-	
+	//
 	initBall();
-	//initMaguire();
+	initMaguire();
 }
 
 int main(void)
@@ -174,11 +189,14 @@ int main(void)
 		for (int i = 0; i < 20; i++) {
 			displaytMatrix();
 		}
-		//moveBall();
-		//for (int i = 0; i < 4; i++) {
-			//PORTC = (i<<2);
-			//takeJoystickInput(i);
-		//}
+		moveBall();
+		for (int i = 0; i < 4; i++) {
+			PORTC = (i<<2);
+			takeJoystickInput(i);
+		}
+		for (int i = 0; i < 20; i++) {
+			displaytMatrix();
+		}
 		takeGyroscopeInput();
 		
     }
