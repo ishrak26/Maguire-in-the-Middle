@@ -28,3 +28,8 @@
 	
 	initially assign 0 to direction, and then set what's needed
 */
+
+#define JOYSTICK_THRESHOLD 512
+#define JOYSTICK_SENSITIVITY 500
+
+

@@ -170,10 +170,10 @@ int main(void)
 		
 		
 		displaytMatrix();
-		movePaddle(1<<UP, 2);
-		movePaddle(1<<RIGHT, 0);
-		movePaddle(1<<LEFT, 1);
-		movePaddle(1<<RIGHT, 3);
+		//movePaddle(1<<UP, 2);
+		//movePaddle(1<<RIGHT, 0);
+		//movePaddle(1<<LEFT, 1);
+		movePaddle(1<<UP, 1);
 		_delay_ms(200);
 		//moveBall();
 		//moveMaguire(1, 1);

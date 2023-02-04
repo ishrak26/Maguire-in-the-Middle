@@ -1,57 +1,53 @@
-/* assigned to Farhan, Akash */
 #pragma once
+/* assigned to Farhan, Akash */
+
 #include "def.h"
-#include "Paddle.h"
+#include "paddle.h"
+#include "UART.h"
 
-
-int takeJoystickInput(int idx) {
+void takeJoystickInput(int idx) {
 	/*
 		just take the current joystick input
 		joystick MUX selection bit will be handled by the caller 
 	*/
-	int HORIZONTALMOV = 0;
-	int VERTICAlMOV = 0;
-	int direction = 0b00000000;
-	unsigned int adcl, adch, adc;
+	unsigned char horizontalmov, verticalmov;
+	int direction = 0;
+	
 	ADMUX = 0b01100000; //setting the reference of ADC
-	ADCSRA |= (1<<ADEN)|(1<<ADPS0); //enabling the ADC, setting pre-scalar 2
+	ADCSRA = 0b10000010; //enabling the ADC, setting pre-scalar 4
 
-	ADCSRA |= (1<<ADSC);//start ADC conversion
-	while ( !(ADCSRA & (1<<ADSC)));//wait till ADC conversion
-	adcl = ADCL;
-	adch = ADCH;
-	adc = (adch<<2) | (adcl>>6);
-	HORIZONTALMOV = adc;//moving value
-	ADC=0;//reset ADC register
-	ADMUX=0b01100001;//changing channel
-	//break;			
+	ADCSRA |= (1<<ADSC); //start ADC conversion
+	while (ADCSRA & (1<<ADSC)); //wait till ADC conversion
+	
+	horizontalmov = ADCH; //moving value
+	
+	ADMUX |= 1; //changing channel			
 
 	ADCSRA |= (1<<ADSC);// start ADC conversion
-	while ( !(ADCSRA & (1<<ADSC)));// wait till ADC conversion
-	adcl = ADCL;
-	adch = ADCH;
-	adc = (adch<<2) | (adcl>>6);
-	VERTICAlMOV = adc;// moving value
-	ADC=0;// reset ADC register
-	//ADMUX=0b01100000;// changing channel
-	//break;
+	while (ADCSRA & (1<<ADSC));// wait till ADC conversion
+	verticalmov = ADCH;// moving value
 				
-	if (HORIZONTALMOV < JOYSTICK_THRESHOLD-150)
+	if (horizontalmov < JOYSTICK_THRESHOLD-JOYSTICK_SENSITIVITY)
 	{
 		direction |= (1<<LEFT);
 	}
-	if (HORIZONTALMOV > JOYSTICK_THRESHOLD+150)
+	else if (horizontalmov > JOYSTICK_THRESHOLD+JOYSTICK_SENSITIVITY)
 	{
-		direction | = (1<<RIGHT);
+		direction |= (1<<RIGHT);
 	}
-	if (VERTICAlMOV < JOYSTICK_THRESHOLD-150)
+	
+	if (verticalmov < JOYSTICK_THRESHOLD-JOYSTICK_SENSITIVITY)
 	{
-		direction | = (1<<DOWN);
+		direction |= (1<<DOWN);
 	}
-	if (VERTICAlMOV > JOYSTICK_THRESHOLD+150)
+	else if (verticalmov > JOYSTICK_THRESHOLD+JOYSTICK_SENSITIVITY)
 	{
-		direction | = (1<<UP);
+		direction |= (1<<UP);
 	}
+	//uart_send(horizontalmov);
+	//_delay_ms(1000);
+	//uart_send(verticalmov);
+	//_delay_ms(1000);
 
 	movePaddle(direction, idx);
 }
