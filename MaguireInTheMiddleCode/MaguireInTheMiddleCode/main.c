@@ -108,7 +108,11 @@ void moveMaguire(int dx, int dy) {
 
 /* assigned to Saffat, Farhan */
 void takeGyroscopeInput() {
-	
+	uart_send('g');
+	_delay_ms(200);
+	int dx = uart_receive();
+	int dy = uart_receive();
+	moveMaguire(dx, dy);
 }
 
 /* assigned to Akash */
@@ -170,12 +174,12 @@ int main(void)
 		for (int i = 0; i < 20; i++) {
 			displaytMatrix();
 		}
-		moveBall();
-		for (int i = 0; i < 4; i++) {
-			PORTC = (i<<2);
-			takeJoystickInput(i);
-		}
-		
+		//moveBall();
+		//for (int i = 0; i < 4; i++) {
+			//PORTC = (i<<2);
+			//takeJoystickInput(i);
+		//}
+		takeGyroscopeInput();
 		
     }
 }
