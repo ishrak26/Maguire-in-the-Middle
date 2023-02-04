@@ -13,6 +13,7 @@
 #include "def.h"
 #include "paddle.h"
 #include "joystick.h"
+#include "UART.h"
 
 unsigned char matrix[MAT_ROW][MAT_COL];
 
@@ -44,11 +45,11 @@ void displaytMatrix() {
 		for (j = 0; j < MAT_COL; j++) {
 			if (matrix[i][j]) {
 				// make this column 0 (common anode)
-				PORTD = j;
+				PORTD = (j<<2);
 			}
 			else {
 				// disable both decoders to set all 1 for this column
-				PORTD = 16;
+				PORTD = 64;
 			}
 		}
 	}
@@ -146,24 +147,36 @@ void initMaguire() {
 void init() {
 	DDRB = 0xFF; // matrix row
 	DDRD = 0xFF; // matrix column
+	DDRC = 0xFF; // analog mux (joystick) selection bits
 	// TODO: set up other ports
+	uart_init();
+	_delay_ms(1000);
 	
 	init_paddle();
 	
-	//initBall();
+	initBall();
 	//initMaguire();
 }
 
 int main(void)
 {
     /* Replace with your application code */
+	MCUCSR = (1<<JTD);
+	MCUCSR = (1<<JTD);
+
 	init();
     while (1) 
     {
-		for (int i = 0; i < 50; i++) {
+		for (int i = 0; i < 20; i++) {
 			displaytMatrix();
 		}
-		takeJoystickInput(2);
+		moveBall();
+		for (int i = 0; i < 4; i++) {
+			PORTC = (i<<2);
+			takeJoystickInput(i);
+		}
+		
+		
     }
 }
 
