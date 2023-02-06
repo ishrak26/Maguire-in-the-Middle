@@ -8,7 +8,7 @@
 #define BALL_SPEED 1
 
 #define PADDLE_LEN 5
-#define MAX_PADDLE_MOVEMENT 3
+#define MAX_PADDLE_MOVEMENT 2
 
 
 /* 
