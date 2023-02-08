@@ -2,7 +2,7 @@
  * MaguireInTheMiddleCode.c
  *
  * Created: 01/02/2023 10:48:39 PM
- * Author : User
+ * Author : Ishrak
  */ 
 
 #define F_CPU 1000000
@@ -14,24 +14,11 @@
 #include "paddle.h"
 #include "joystick.h"
 #include "UART.h"
+#include "collisions.h"
 
 unsigned char matrix[MAT_ROW][MAT_COL];
-
-struct Ball {
-	/*
-		(x, y) is the coordinates of the ball
-		(dx, dy) is the displacement along x and y-axis per unit time
-	*/
-	int x, y;
-	int dx, dy;		
-} ball;
-
-struct Maguire {
-	/*
-		(x, y) is the bottom-left coordinate of the Maguire
-	*/
-	int x, y;
-} maguire;
+struct Ball ball;
+struct Maguire maguire;
 
 void displaytMatrix() {
 	/*
@@ -68,9 +55,22 @@ void moveBall() {
 		ball.dy = -ball.dy;
 	}
 	
+	// handle ball collision with paddle
+	// bottom paddle
+	if (ball.x+1 == paddles[DOWN].x && ball.y >= paddles[DOWN].y && ball.y < paddles[DOWN].y+PADDLE_LEN) {
+		handleBottomPaddleCollision();
+	}
+	
 	matrix[ball.x][ball.y] = 0;
+	
 	ball.x += ball.dx;
+	if (ball.x < 0) ball.x = 0;
+	if (ball.x >= MAT_ROW) ball.x = MAT_ROW-1;
+	
 	ball.y += ball.dy;
+	if (ball.y < 0) ball.y = 0;
+	if (ball.y >= MAT_COL) ball.y = MAT_COL-1;
+	
 	matrix[ball.x][ball.y] = 1;	
 }
 

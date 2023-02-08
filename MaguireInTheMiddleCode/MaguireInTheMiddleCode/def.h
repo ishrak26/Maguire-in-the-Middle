@@ -32,4 +32,21 @@
 #define JOYSTICK_THRESHOLD 150
 #define JOYSTICK_SENSITIVITY 100
 
+struct Ball {
+	/*
+		(x, y) is the coordinates of the ball
+		(dx, dy) is the displacement along x and y-axis per unit time
+	*/
+	int x, y;
+	int dx, dy;		
+};
+
+struct Maguire {
+	/*
+		(x, y) is the bottom-left coordinate of the Maguire
+	*/
+	int x, y;
+};
+
+
 
