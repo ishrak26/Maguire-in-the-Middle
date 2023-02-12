@@ -83,7 +83,7 @@ void moveBall() {
 	if (ball.y < 0) ball.y = 0;
 	if (ball.y >= MAT_COL) ball.y = MAT_COL-1;
 	
-	matrix[ball.x][ball.y] = 1;	
+	matrix[ball.x][ball.y] = BALL_MARK;	
 }
 
 /* assigned to Ishrak */
@@ -113,7 +113,7 @@ void moveMaguire(int dx, int dy) {
 	
 	for (int i = 0; i < MAG_SIZE; i++) {
 		for (int j = 0; j < MAG_SIZE; j++) {
-			matrix[maguire.x+i][maguire.y+j] = 1;
+			matrix[maguire.x+i][maguire.y+j] = MAGUIRE_MARK;
 		}
 	}
 }
@@ -136,7 +136,7 @@ void initBall() {
 	ball.dy = BALL_SPEED;
 	ball.x = 2;
 	ball.y = 3;
-	matrix[ball.x][ball.y] = 1;
+	matrix[ball.x][ball.y] = BALL_MARK;
 }
 
 // initialize ball
@@ -145,7 +145,7 @@ void initMaguire() {
 	maguire.y = 8;
 	for (int i = 0; i < MAG_SIZE; i++) {
 		for (int j = 0; j < MAG_SIZE; j++) {
-			matrix[maguire.x+i][maguire.y+j] = 1;
+			matrix[maguire.x+i][maguire.y+j] = MAGUIRE_MARK;
 		}
 	}
 }

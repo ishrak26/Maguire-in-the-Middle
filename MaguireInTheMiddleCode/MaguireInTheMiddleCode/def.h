@@ -48,5 +48,10 @@ struct Maguire {
 	int x, y;
 };
 
+#define PADDLE_MARK 1
+#define BALL_MARK 2
+#define MAGUIRE_MARK 3
+
+
 
 
