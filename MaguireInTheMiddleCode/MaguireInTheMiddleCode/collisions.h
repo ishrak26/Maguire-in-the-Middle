@@ -38,5 +38,80 @@ void handleBottomPaddleCollision() {
 	}
 }
 
+void handleTopPaddleCollision() {
+	// handle if ball comes from bottom
+	// ball.x+ball.dx matches paddles[UP].x
+	int dif = ball.y + ball.dy - paddles[UP].y;
+	if (dif == 0) {
+		ball.dx = -1;
+		ball.dy = 1;
+	}
+	else if (dif == 1) {
+		ball.dx = -1;
+		ball.dy = 1;
+	}
+	else if (dif == 2) {
+		ball.dx = -ball.dx;
+	}
+	else if (dif == 3) {
+		ball.dx = 1;
+		ball.dy = 1;
+	}
+	else if (dif == 4) {
+		ball.dx = 1;
+		ball.dy = 1;
+	}
+}
+
+void handleRightPaddleCollision() {
+	// handle if ball comes from left
+	// ball.y+ball.dy matches paddles[RIGHT].y
+	int dif = ball.x + ball.dx - paddles[RIGHT].x;
+	if (dif == 0) {
+		ball.dx = -1;
+		ball.dy = -1;
+	}
+	else if (dif == 1) {
+		ball.dx = -1;
+		ball.dy = -1;
+	}
+	else if (dif == 2) {
+		ball.dy = -ball.dy;
+	}
+	else if (dif == 3) {
+		ball.dx = 1;
+		ball.dy = -1;
+	}
+	else if (dif == 4) {
+		ball.dx = 1;
+		ball.dy = -1;
+	}
+}
+
+void handleLeftPaddleCollision() {
+	// handle if ball comes from left
+	// ball.y+ball.dy matches paddles[LEFT].y
+	int dif = ball.x + ball.dx - paddles[LEFT].x;
+	if (dif == 0) {
+		ball.dx = -1;
+		ball.dy = 1;
+	}
+	else if (dif == 1) {
+		ball.dx = -1;
+		ball.dy = 1;
+	}
+	else if (dif == 2) {
+		ball.dy = -ball.dy;
+	}
+	else if (dif == 3) {
+		ball.dx = 1;
+		ball.dy = 1;
+	}
+	else if (dif == 4) {
+		ball.dx = 1;
+		ball.dy = 1;
+	}
+}
+
 
 #endif /* COLLISIONS_H_ */

@@ -60,6 +60,18 @@ void moveBall() {
 	if (ball.x+1 == paddles[DOWN].x && ball.y >= paddles[DOWN].y && ball.y < paddles[DOWN].y+PADDLE_LEN) {
 		handleBottomPaddleCollision();
 	}
+	// top paddle
+	else if (ball.x-1 == paddles[UP].x && ball.y >= paddles[UP].y && ball.y < paddles[UP].y+PADDLE_LEN) {
+		handleTopPaddleCollision();
+	}
+	// right paddle
+	else if (ball.y+1 == paddles[RIGHT].y && ball.x >= paddles[RIGHT].x && ball.x < paddles[RIGHT].x+PADDLE_LEN) {
+		handleRightPaddleCollision();
+	}
+	// left paddle
+	else if (ball.y-1 == paddles[LEFT].y && ball.x >= paddles[LEFT].x && ball.x < paddles[LEFT].x+PADDLE_LEN) {
+		handleLeftPaddleCollision();
+	}
 	
 	matrix[ball.x][ball.y] = 0;
 	
@@ -190,6 +202,7 @@ int main(void)
 			displaytMatrix();
 		}
 		moveBall();
+		
 		for (int i = 0; i < 4; i++) {
 			PORTC = (i<<2);
 			takeJoystickInput(i);
@@ -198,6 +211,7 @@ int main(void)
 			displaytMatrix();
 		}
 		takeGyroscopeInput();
+		
 		
     }
 }
