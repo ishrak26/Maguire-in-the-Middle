@@ -118,30 +118,6 @@ void moveMaguire(int dx, int dy) {
 	}
 }
 
-/* assigned to Saffat, Farhan */
-void takeGyroscopeInput() {
-	uart_send('g');
-	_delay_ms(10);
-	for (int i = 0; i < 20; i++) {
-		displaytMatrix();
-	}
-	unsigned char dxr = uart_receive();
-	for (int i = 0; i < 20; i++) {
-		displaytMatrix();
-	}
-	//_delay_ms(200);
-	unsigned char dyr = uart_receive();
-	for (int i = 0; i < 20; i++) {
-		displaytMatrix();
-	}
-	//_delay_ms(200);
-	int dx = dxr;
-	int dy = dyr;
-	moveMaguire(dx-5, dy-5);
-	//uart_send('f');
-	//_delay_ms(200);
-}
-
 /* assigned to Akash */
 void playMusic() {
 	
@@ -189,6 +165,31 @@ void init() {
 	initMaguire();
 }
 
+/* assigned to Ishrak */
+void takeGyroscopeInput() {
+	uart_send('g');
+	_delay_ms(10);
+	for (int i = 0; i < 20; i++) {
+		displaytMatrix();
+	}
+	unsigned char dxr = uart_receive();
+	for (int i = 0; i < 20; i++) {
+		displaytMatrix();
+	}
+	//_delay_ms(200);
+	unsigned char dyr = uart_receive();
+	for (int i = 0; i < 20; i++) {
+		displaytMatrix();
+	}
+	//_delay_ms(200);
+	int dx = dxr;
+	int dy = dyr;
+	moveMaguire(dx-5, dy-5);
+	//uart_send('f');
+	//_delay_ms(200);
+}
+
+
 int main(void)
 {
     /* Replace with your application code */
@@ -202,17 +203,31 @@ int main(void)
 			displaytMatrix();
 		}
 		moveBall();
+		uart_send('g');
 		
-		for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < 2; i++) {
 			PORTC = (i<<2);
 			takeJoystickInput(i);
 		}
+		for (int i = 0; i < 10; i++) {
+			displaytMatrix();
+		}
+		unsigned char dxr = uart_receive();
+		
+		for (int i = 2; i < 4; i++) {
+			PORTC = (i<<2);
+			takeJoystickInput(i);
+		}
+		for (int i = 0; i < 10; i++) {
+			displaytMatrix();
+		}
+		unsigned char dyr = uart_receive();
 		for (int i = 0; i < 20; i++) {
 			displaytMatrix();
 		}
-		takeGyroscopeInput();
-		
-		
+		int dx = dxr;
+		int dy = dyr;
+		moveMaguire(dx-5, dy-5);
     }
 }
 
