@@ -56,3 +56,19 @@ MaguireInTheMiddleCode/.vs/MaguireInTheMiddleCode/v14/.atsuo
 Testing/testHexFile/testHexFile/
 
 Testing/testHexFile/
+
+*.eep
+
+*.bin
+
+*.lss
+
+*.srec
+
+*.xml
+
+*.cproj
+
+Testing/PaddleMovementCode/.vs/PaddleMovementCode/v14/.atsuo
+
+*.workspace
