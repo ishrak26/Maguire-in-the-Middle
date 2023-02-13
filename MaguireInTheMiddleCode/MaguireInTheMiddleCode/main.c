@@ -19,6 +19,8 @@
 unsigned char matrix[MAT_ROW][MAT_COL];
 struct Ball ball;
 struct Maguire maguire;
+int playerScores[PLAYER_NUMBER];
+int currPlayer;
 
 void displaytMatrix() {
 	/*
@@ -55,22 +57,11 @@ void moveBall() {
 		ball.dy = -ball.dy;
 	}
 	
-	// handle ball collision with paddle
-	// bottom paddle
-	if (ball.x+1 == paddles[DOWN].x && ball.y >= paddles[DOWN].y && ball.y < paddles[DOWN].y+PADDLE_LEN) {
-		handleBottomPaddleCollision();
-	}
-	// top paddle
-	else if (ball.x-1 == paddles[UP].x && ball.y >= paddles[UP].y && ball.y < paddles[UP].y+PADDLE_LEN) {
-		handleTopPaddleCollision();
-	}
-	// right paddle
-	else if (ball.y+1 == paddles[RIGHT].y && ball.x >= paddles[RIGHT].x && ball.x < paddles[RIGHT].x+PADDLE_LEN) {
-		handleRightPaddleCollision();
-	}
-	// left paddle
-	else if (ball.y-1 == paddles[LEFT].y && ball.x >= paddles[LEFT].x && ball.x < paddles[LEFT].x+PADDLE_LEN) {
-		handleLeftPaddleCollision();
+	handlePaddleCollisions();
+	int maguireCollision = handleMaguireCollisions();
+	if (maguireCollision) {
+		playerScores[currPlayer]++;
+		uart_send('s');
 	}
 	
 	matrix[ball.x][ball.y] = 0;

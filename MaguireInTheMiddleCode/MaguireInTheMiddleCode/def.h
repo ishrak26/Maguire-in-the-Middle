@@ -52,6 +52,7 @@ struct Maguire {
 #define BALL_MARK 2
 #define MAGUIRE_MARK 3
 
+#define PLAYER_NUMBER 5
 
 
 
