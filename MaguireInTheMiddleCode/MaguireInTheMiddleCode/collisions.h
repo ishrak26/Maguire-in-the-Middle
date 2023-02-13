@@ -117,11 +117,19 @@ void handleLeftPaddleCollision() {
 void handleBottomMaguireCollision() {
 	// handle if ball comes from bottom
 	int dif = ball.y + ball.dy - maguire.y;
-	if (dif == 0) {
+	if (dif == -1) {
+		ball.dx = 1;
+		ball.dy = -1;
+	}
+	else if (dif == 0) {
 		ball.dx = 1;
 		ball.dy = -1;
 	}
 	else if (dif == 1) {
+		ball.dx = 1;
+		ball.dy = 1;
+	}
+	else if (dif == 2) {
 		ball.dx = 1;
 		ball.dy = 1;
 	}
@@ -130,11 +138,19 @@ void handleBottomMaguireCollision() {
 void handleTopMaguireCollision() {
 	// handle if ball comes from top
 	int dif = ball.y + ball.dy - maguire.y;
-	if (dif == 0) {
+	if (dif == -1) {
+		ball.dx = -1;
+		ball.dy = -1;
+	}
+	else if (dif == 0) {
 		ball.dx = -1;
 		ball.dy = -1;
 	}
 	else if (dif == 1) {
+		ball.dx = -1;
+		ball.dy = 1;
+	}
+	else if (dif == 2) {
 		ball.dx = -1;
 		ball.dy = 1;
 	}
@@ -190,12 +206,12 @@ int handleMaguireCollisions() {
 	// handle ball collision with maguire
 	int flag = 0;
 	// bottom surface
-	if (ball.x-1 == maguire.x && ball.y >= maguire.y && ball.y < maguire.y+MAG_SIZE) {
+	if (ball.x-1 == maguire.x && ball.y >= maguire.y-1 && ball.y <= maguire.y+MAG_SIZE) {
 		handleBottomMaguireCollision();
 		flag = 1;
 	}
 	// top surface
-	else if (ball.x == maguire.x-MAG_SIZE && ball.y >= maguire.y && ball.y < maguire.y+MAG_SIZE) {
+	else if (ball.x == maguire.x-MAG_SIZE && ball.y >= maguire.y-1 && ball.y <= maguire.y+MAG_SIZE) {
 		handleTopMaguireCollision();
 		flag = 1;
 	}
