@@ -93,6 +93,16 @@ void moveMaguire(int dx, int dy) {
 		dy = 0;
 	}
 	
+	// check if maguire collides with paddle
+	for (int i = 0; i < MAG_SIZE; i++) {
+		for (int j = 0; j < MAG_SIZE; j++) {
+			if (matrix[maguire.x+dx+i][maguire.y+dy+j] == PADDLE_MARK) {
+				dx = dy = 0;
+				break;
+			} 
+		}
+	}
+	
 	for (int i = 0; i < MAG_SIZE; i++) {
 		for (int j = 0; j < MAG_SIZE; j++) {
 			matrix[maguire.x+i][maguire.y+j] = 0;
@@ -114,12 +124,7 @@ void playMusic() {
 	
 }
 
-/* assigned to TBA */
-void displayLCD() {
-	
-}
-
-/* all collisions/interceptions and gameplay logic will be handled later */
+/* all gameplay logic will be handled later */
 
 // initialize ball
 void initBall() {
@@ -151,7 +156,7 @@ void init() {
 	_delay_ms(1000);
 	
 	init_paddle();
-	//
+	
 	initBall();
 	initMaguire();
 }
@@ -194,6 +199,9 @@ int main(void)
 			displaytMatrix();
 		}
 		moveBall();
+		for (int i = 0; i < 10; i++) {
+			displaytMatrix();
+		}
 		uart_send('g');
 		
 		for (int i = 0; i < 2; i++) {
@@ -204,6 +212,9 @@ int main(void)
 			displaytMatrix();
 		}
 		unsigned char dxr = uart_receive();
+		for (int i = 0; i < 10; i++) {
+			displaytMatrix();
+		}
 		
 		for (int i = 2; i < 4; i++) {
 			PORTC = (i<<2);
@@ -213,7 +224,7 @@ int main(void)
 			displaytMatrix();
 		}
 		unsigned char dyr = uart_receive();
-		for (int i = 0; i < 20; i++) {
+		for (int i = 0; i < 10; i++) {
 			displaytMatrix();
 		}
 		int dx = dxr;

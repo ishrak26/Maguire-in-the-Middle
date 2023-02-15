@@ -38,11 +38,11 @@ void takeJoystickInput(int idx) {
 	
 	if (verticalmov < JOYSTICK_THRESHOLD-JOYSTICK_SENSITIVITY)
 	{
-		direction |= (1<<DOWN);
+		direction |= (1<<UP);
 	}
 	else if (verticalmov > JOYSTICK_THRESHOLD+JOYSTICK_SENSITIVITY)
 	{
-		direction |= (1<<UP);
+		direction |= (1<<DOWN);
 	}
 	//uart_send(horizontalmov);
 	//_delay_ms(1000);

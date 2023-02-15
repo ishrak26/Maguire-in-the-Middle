@@ -15,6 +15,7 @@ Adafruit_MPU6050 mpu;
 
 int currPlayer;
 int currScore;
+int tone_pin = 8;
 
 void setup(void) {
   Serial.begin(9600);
@@ -168,6 +169,7 @@ void loop() {
       //Serial.print(" ");    
     } else if (ch == 's') {
       currScore++;
+      tone(tone_pin, 1300, 300);
     }
         
     //else if (ch == 'f') {
