@@ -6,6 +6,8 @@
 #include <SoftwareSerial.h>
 #include <math.h>
 #include <LiquidCrystal_I2C.h>
+#include <TimerOne.h>
+#include <avr/sleep.h>
 
 LiquidCrystal_I2C lcd(0x27, 16, 2);  // I2C address 0x27, 16 column and 2 rows
 
@@ -16,6 +18,16 @@ Adafruit_MPU6050 mpu;
 int currPlayer;
 int currScore;
 int tone_pin = 8;
+
+volatile unsigned long count = 30; // use volatile for shared variables
+
+void counter(void)
+{
+  count = count - 1;
+  if (count == -1) {
+    count = 30;
+  }  
+}
 
 void setup(void) {
   Serial.begin(9600);
@@ -98,6 +110,8 @@ void setup(void) {
   currPlayer = 0;
   currScore = 0;
 
+  Timer1.initialize(1000000);
+  Timer1.attachInterrupt(counter); 
   
   ////Serial.println("");
   delay(100);
@@ -156,25 +170,46 @@ void loop() {
       
       //Serial.write(maguire_dy);
       //delay(200);
-      Serial.print(int(dxs));
+      //Serial.print(int(dxs));
       SUART.write(dxs);
       delay(10);
-      Serial.print(",");
-      Serial.print(int(dys));
+      //Serial.print(",");
+      //Serial.print(int(dys));
       SUART.write(dys);
       delay(10);
-      Serial.print(" ");      
+      //Serial.print(" ");      
       //Serial.print(',');
       //Serial.print(maguire_dy);
       //Serial.print(" ");    
     } else if (ch == 's') {
       currScore++;
-      tone(tone_pin, 1300, 300);
+      //tone(tone_pin, 1300, 300); // temporarily turn off sound
     }
         
     //else if (ch == 'f') {
       //Serial.print("f ");
     //}
   }
-  delay(200);
+  unsigned long countCopy;  // holds a copy of the blinkCount
+
+  // to read a variable which the interrupt code writes, we
+  // must temporarily disable interrupts, to be sure it will
+  // not change while we are reading.  To minimize the time
+  // with interrupts off, just quickly make a copy, and then
+  // use the copy while allowing the interrupt to keep working.
+  noInterrupts();
+  countCopy = count;
+  interrupts();
+  
+  lcd.setCursor(8, 0);
+  lcd.print("Time:");
+
+  if (countCopy == 9) {
+    lcd.setCursor(9, 1);
+    lcd.print(" ");    
+  } 
+  lcd.setCursor(8, 1);    
+  lcd.print(countCopy);
+
+  //delay(200);
 }
