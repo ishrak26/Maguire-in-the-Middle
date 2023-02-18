@@ -22,43 +22,54 @@ volatile int winnerCnt = 0;
 
 int tone_pin = 8;
 
-volatile int count = 30; // use volatile for shared variables
+unsigned int reload = 0xF424; // every 1 second
+volatile int count;
 
-void counter(void)
+ISR(TIMER1_COMPA_vect)
 {
-  Serial.println(gameState);
-  if (gameState&1) {
-    count = count - 1;
-    Serial.println(count);
-    if (count == -1) {
-      Serial.print(" here ");
-      Timer1.stop();
-      Serial.print(" there ");
-      if (winnerCnt == 0) {
-        winnerCnt = 1;
-        winner[0] = playerScores[(gameState>>1)];                        
-      }
-      else if (playerScores[(gameState>>1)] > winner[winnerCnt-1]) {
-        winnerCnt = 1;
-        winner[0] = playerScores[(gameState>>1)];  
-      }  
-      else if (playerScores[(gameState>>1)] == winner[winnerCnt-1]) {
-        // tie
-        winner[winnerCnt++] = (gameState>>1);       
-      }
-      lcd.clear();
-      gameState++;
-      Serial.print(" ttthere ");
-    }
+  count--;
+  if (count == -1) {
+    TIMSK1 &= ~(1 << OCIE1A);
+  }
+}
+
+void findWinner() {
+  if (winnerCnt == 0) {
+    winnerCnt = 1;
+    winner[0] = playerScores[(gameState>>1)];                        
+  }
+  else if (playerScores[(gameState>>1)] > winner[winnerCnt-1]) {
+    winnerCnt = 1;
+    winner[0] = playerScores[(gameState>>1)];  
   }  
+  else if (playerScores[(gameState>>1)] == winner[winnerCnt-1]) {
+    // tie
+    winner[winnerCnt++] = (gameState>>1);       
+  }
+  lcd.clear();
+  gameState++;
 }
 
 void setup(void) {
+  cli();
+  initialize_timer();
+  TIMSK1 &= ~(1<<OCIE1A);
+  sei();
+  
   Serial.begin(9600);
   SUART.begin(9600);
   while (!Serial)
     delay(10); // will pause Zero, Leonardo, etc until serial console opens
 
+  initialize_gyro();
+  
+  lcd.init();  // initialize the lcd
+  lcd.backlight();
+
+  delay(100);
+}
+
+void initialize_gyro() {
   //Serial.println("Adafruit MPU6050 test!");
 
   // Try to initialize!
@@ -128,130 +139,121 @@ void setup(void) {
     //Serial.println("5 Hz");
     break;
   }
-  lcd.init();  // initialize the lcd
-  lcd.backlight();
+}
 
-  Timer1.initialize(1000000);
-  Timer1.attachInterrupt(counter); 
+void initialize_timer() {
+  // initialize timer1
+  count = 30;
   
-  delay(100);
+  TCCR1A = 0;
+  TCCR1B = 0; 
+  OCR1A = reload;
+  TCCR1B = (1<<WGM12) | (1<<CS12); 
+  TIMSK1 = (1<<OCIE1A); 
+   
 }
 
 void loop() {
-  if (gameState&1) {
-    /* Get new sensor events with the readings */
-    sensors_event_t a, g, temp;
-    mpu.getEvent(&a, &g, &temp);
-    
-    float dx, dy, x, y;
-    x = a.acceleration.x;
-    y = a.acceleration.y;
-    dx = (fabs(x))*12.7;
-    dy = (fabs(y))*12.7;
-    if(x < 0){
-      dx = -dx; 
-    }
-    if(y < 0){
-      dy = -dy; 
-    }
-    int maguire_dx , maguire_dy;
-    maguire_dx = dx/31.0;
-    maguire_dy = dy/31.0;
-    maguire_dx += 5;
-    maguire_dy += 5;
-    unsigned char dxs = maguire_dx;
-    unsigned char dys = maguire_dy;
-    
-    lcd.setCursor(1, 0);
-    lcd.print("Current Maguire: Player ");
+  /* Get new sensor events with the readings */
+  sensors_event_t a, g, temp;
+  mpu.getEvent(&a, &g, &temp);
+  
+  float dx, dy, x, y;
+  x = a.acceleration.x;
+  y = a.acceleration.y;
+  dx = (fabs(x))*12.7;
+  dy = (fabs(y))*12.7;
+  if(x < 0){
+    dx = -dx; 
+  }
+  if(y < 0){
+    dy = -dy; 
+  }
+  int maguire_dx , maguire_dy;
+  maguire_dx = dx/31.0;
+  maguire_dy = dy/31.0;
+  maguire_dx += 5;
+  maguire_dy += 5;
+  unsigned char dxs = maguire_dx;
+  unsigned char dys = maguire_dy;
 
-    lcd.setCursor(8, 0);
-    lcd.print((gameState>>1));    
-    
-    lcd.setCursor(2, 1);
-    lcd.print("Score");
-
-    lcd.setCursor(2, 1);
-    lcd.print(playerScores[(gameState>>1)]);
-
-    byte n = SUART.available();
-    char ch;
-    if(n != 0){
+  byte n = SUART.available();
+  char ch;
+  if(n != 0){
       ch = SUART.read();
-        
+
       if(ch == 'g'){    
         SUART.write(dxs);
         delay(10);
         SUART.write(dys);
         delay(10);
-      } else if (ch == 's') {
-        playerScores[(gameState>>1)]++;
-        tone(tone_pin, 1300, 300); // temporarily turn off sound
-      }   
+      }
+  }
+  
+  if (gameState&1) {
+    if (!(TIMSK1 & (1<<OCIE1A))) {
+      findWinner();
+      return;    
     }
-    unsigned int countCopy;  // holds a copy of the blinkCount
-
-    // to read a variable which the interrupt code writes, we
-    // must temporarily disable interrupts, to be sure it will
-    // not change while we are reading.  To minimize the time
-    // with interrupts off, just quickly make a copy, and then
-    // use the copy while allowing the interrupt to keep working.
-    noInterrupts();
-    countCopy = count;
-    interrupts();
     
-    if (gameState&1) {
-      lcd.setCursor(12, 0);
-      lcd.print("Time:");
+    lcd.setCursor(0, 0);
+    lcd.print("Maguire: ");
 
+    lcd.setCursor(10, 0);
+    lcd.print((gameState>>1));    
+    
+    lcd.setCursor(0, 1);
+    lcd.print("Score: ");
+
+    lcd.setCursor(8, 1);
+    lcd.print(playerScores[(gameState>>1)]);
+        
+    if (n != 0 && ch == 's') {
+      playerScores[(gameState>>1)]++;
+      tone(tone_pin, 1300, 300); // temporarily turn off sound
+    }  
+    lcd.setCursor(12, 0);
+      lcd.print("Time:");
+      int countCopy = count;
       if (countCopy == 9) {
         lcd.setCursor(13, 1);
         lcd.print(" ");    
       } 
       lcd.setCursor(12, 1);    
-      lcd.print(countCopy);
-    }
+      lcd.print(countCopy);     
   } 
   else {
     if (gameState == 10) {
-        lcd.setCursor(1, 0);
-        lcd.print("Game has ended!");
+      lcd.setCursor(1, 0);
+      lcd.print("Game has ended!");
+      lcd.setCursor(1, 1);
+      if (winnerCnt > 1) {
         lcd.setCursor(1, 1);
-        if (winnerCnt > 1) {
-          lcd.setCursor(1, 1);
-          lcd.print("Tie between players "); 
-          lcd.setCursor(8, 1);
-          lcd.print(winner[0]);           
-          for (int i = 1; i < winnerCnt; i++) {
-            lcd.setCursor(8+2*i-1, 1);
-            lcd.print(",");
-            lcd.setCursor(8+2*i, 1);
-            lcd.print(winner[i]); 
-          }      
-        }
-        else {
-          lcd.setCursor(1, 1);
-          lcd.print("Winner: Player "); 
-          lcd.setCursor(8, 1);
-          lcd.print(winner[0]);           
-        }       
+        lcd.print("Tie between players "); 
+        lcd.setCursor(8, 1);
+        lcd.print(winner[0]);           
+        for (int i = 1; i < winnerCnt; i++) {
+          lcd.setCursor(8+2*i-1, 1);
+          lcd.print(",");
+          lcd.setCursor(8+2*i, 1);
+          lcd.print(winner[i]); 
+        }      
+      }
+      else {
+        lcd.setCursor(1, 1);
+        lcd.print("Winner: Player "); 
+        lcd.setCursor(8, 1);
+        lcd.print(winner[0]);           
+      }       
     } 
     else {
       lcd.setCursor(0, 0);
       lcd.print("Press button!");  
       
-      byte n = SUART.available();
-      //Serial.print(n);
-      //Serial.print(" ");
-      char ch;
-      if(n != 0){
-        ch = SUART.read();
-          
-        if(ch == 'a'){              
-          gameState++;
-          lcd.clear();
-          count = 30;
-        }
+      if(n != 0 && ch == 'a'){              
+        gameState++;
+        lcd.clear();
+        initialize_timer();
       }      
     }          
   }
