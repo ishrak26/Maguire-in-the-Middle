@@ -9,6 +9,7 @@
 
 #include <avr/io.h>
 #include <util/delay.h>
+#include <avr/interrupt.h>
 
 #include "def.h"
 #include "paddle.h"
@@ -20,7 +21,62 @@ unsigned char matrix[MAT_ROW][MAT_COL];
 struct Ball ball;
 struct Maguire maguire;
 int playerScores[PLAYER_NUMBER];
-int currPlayer;
+volatile int overflowCount;
+int gameState;
+/*
+	0 --> initial state
+	1 --> player 1 playing
+	2 --> between player 1 and 2
+	3 --> player 2 playing
+	...
+	10 --> game ended 
+	
+	currPlayer = (gameState>>1)
+*/
+
+ISR(TIMER1_OVF_vect)
+{
+	overflowCount++;
+	if(overflowCount==458)
+	{
+		if (gameState&1) {
+			// time up for the current player
+			gameState++;
+		}
+		overflowCount = 0;
+		
+	}
+}
+
+/*
+void takeButtonInput() {
+	unsigned char in;
+	while (1) {
+		in = PIND;
+		if(in & 4)
+		{
+			if (!(gameState&1) && gameState < 10) {
+				gameState++;
+				uart_send('a');
+				_delay_ms(200);
+				TCNT1 = 0;
+				overflowCount = 0;
+				return;
+			}			             			
+		}
+	}
+}
+*/
+
+ISR(INT0_vect)//STEP2
+{
+	if (!(gameState&1) && gameState < 10) {
+		gameState++;
+		uart_send('a');
+		TCNT1 = 0;
+		overflowCount = 0;
+	}
+}
 
 void displaytMatrix() {
 	/*
@@ -34,11 +90,11 @@ void displaytMatrix() {
 		for (j = 0; j < MAT_COL; j++) {
 			if (matrix[i][j]) {
 				// make this column 0 (common anode)
-				PORTD = (j<<2);
+				PORTD = (j<<3);
 			}
 			else {
 				// disable both decoders to set all 1 for this column
-				PORTD = 64;
+				PORTD = 128;
 			}
 		}
 	}
@@ -60,7 +116,7 @@ void moveBall() {
 	handlePaddleCollisions();
 	int maguireCollision = handleMaguireCollisions();
 	if (maguireCollision) {
-		playerScores[currPlayer]++;
+		playerScores[(gameState>>1)]++;
 		uart_send('s');
 	}
 	
@@ -119,13 +175,6 @@ void moveMaguire(int dx, int dy) {
 	}
 }
 
-/* assigned to Akash */
-void playMusic() {
-	
-}
-
-/* all gameplay logic will be handled later */
-
 // initialize ball
 void initBall() {
 	ball.dx = BALL_SPEED;
@@ -146,10 +195,28 @@ void initMaguire() {
 	}
 }
 
+void initTimer() {
+	overflowCount = 0;
+	//configure timer
+	TCCR1A = 0b00000000; // normal mode
+	TCCR1B = 0b00000001; // no prescaler, internal clock
+	TIMSK = 0b00000100; //Enable Overflow Interrupt
+}
+
+void initButtonInterrupt() {
+	GICR = (1 << INT0); //STEP3
+	MCUCR = MCUCR | (1 << ISC01);//STEP4
+	MCUCR = MCUCR | (1 << ISC00);//STEP4
+}
+
+void initGame() {
+	gameState = 0;
+}
+
 /* initialize all ports */
 void init() {
 	DDRB = 0xFF; // matrix row
-	DDRD = 0xFF; // matrix column
+	DDRD = 0b11111011; // matrix column
 	DDRC = 0xFF; // analog mux (joystick) selection bits
 	// TODO: set up other ports
 	uart_init();
@@ -159,9 +226,14 @@ void init() {
 	
 	initBall();
 	initMaguire();
+	initGame();
+	initButtonInterrupt();
+	initTimer();
+	sei(); //Global Interrupt Enable
 }
 
 /* assigned to Ishrak */
+/*
 void takeGyroscopeInput() {
 	uart_send('g');
 	_delay_ms(10);
@@ -184,7 +256,7 @@ void takeGyroscopeInput() {
 	//uart_send('f');
 	//_delay_ms(200);
 }
-
+*/
 
 int main(void)
 {
@@ -195,41 +267,59 @@ int main(void)
 	init();
     while (1) 
     {
-		for (int i = 0; i < 20; i++) {
-			displaytMatrix();
-		}
-		moveBall();
-		for (int i = 0; i < 10; i++) {
-			displaytMatrix();
-		}
-		uart_send('g');
+		if (gameState&1) {
+			for (int i = 0; i < 20; i++) {
+				displaytMatrix();
+			}
+			if (!(gameState&1)) continue;
+			moveBall();
+			for (int i = 0; i < 10; i++) {
+				displaytMatrix();
+			}
+			uart_send('g'); // want to take gyroscope input
+			if (!(gameState&1)) continue;
+			for (int i = 0; i < 2; i++) {
+				PORTC = (i<<2);
+				takeJoystickInput(i);
+			}
+			if (!(gameState&1)) continue;
 		
-		for (int i = 0; i < 2; i++) {
-			PORTC = (i<<2);
-			takeJoystickInput(i);
-		}
-		for (int i = 0; i < 10; i++) {
-			displaytMatrix();
-		}
-		unsigned char dxr = uart_receive();
-		for (int i = 0; i < 10; i++) {
-			displaytMatrix();
-		}
+			for (int i = 0; i < 10; i++) {
+				displaytMatrix();
+			}
+			unsigned char dxr = 5, dyr = 5;
+			if (!(gameState&1)) continue;
+			dxr = uart_receive();
+			if (!(gameState&1)) continue;
+			for (int i = 0; i < 10; i++) {
+				displaytMatrix();
+			}
+			if (!(gameState&1)) continue;
+			for (int i = 2; i < 4; i++) {
+				PORTC = (i<<2);
+				takeJoystickInput(i);
+			}
 		
-		for (int i = 2; i < 4; i++) {
-			PORTC = (i<<2);
-			takeJoystickInput(i);
+			for (int i = 0; i < 10; i++) {
+				displaytMatrix();
+			}
+			if (!(gameState&1)) continue;
+			dyr = uart_receive();
+			if (!(gameState&1)) continue;
+			for (int i = 0; i < 10; i++) {
+				displaytMatrix();
+			}
+			
+			int dx = dxr;
+			int dy = dyr;
+			if (!(gameState&1)) continue;
+			moveMaguire(dx-5, dy-5);
 		}
-		for (int i = 0; i < 10; i++) {
-			displaytMatrix();
+		else {
+			for (int i = 0; i < 20; i++) {
+				displaytMatrix();
+			}
 		}
-		unsigned char dyr = uart_receive();
-		for (int i = 0; i < 10; i++) {
-			displaytMatrix();
-		}
-		int dx = dxr;
-		int dy = dyr;
-		moveMaguire(dx-5, dy-5);
     }
 }
 
