@@ -246,6 +246,14 @@ void loop() {
         lcd.print(winner[0]);           
       }       
     } 
+    else if (gameState == 0) {
+        lcd.setCursor(0, 0);
+        lcd.print("Welcome to Maguire In The Middle");    
+        for(int PositionCount=0;PositionCount<30; PositionCount++) {//loop for scrolling the LCD text
+          lcd.scrollDisplayLeft();//builtin command to scroll left the text
+          delay(400);// delay of 150 msec
+        }               
+    }    
     else {
       lcd.setCursor(0, 0);
       lcd.print("Press button!");  
