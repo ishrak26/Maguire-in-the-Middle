@@ -37,7 +37,7 @@ int gameState;
 ISR(TIMER1_OVF_vect)
 {
 	overflowCount++;
-	if(overflowCount==458)
+	if(overflowCount==458) // 30 seconds
 	{
 		if (gameState&1) {
 			// time up for the current player
@@ -90,11 +90,21 @@ void displaytMatrix() {
 		for (j = 0; j < MAT_COL; j++) {
 			if (matrix[i][j]) {
 				// make this column 0 (common anode)
-				PORTD = (j<<3);
+				PORTD = (j<<PORTD3);
+				if (matrix[i][j] == BALL_MARK || matrix[i][j] == PADDLE_MARK) {
+					// set MUX selection bit to 1
+					// green
+					PORTC |= (1<<PORTC2);
+				}
+				else {
+					// set MUX selection bit to 0
+					// red
+					PORTC &= ~(1<<PORTC2);
+				}
 			}
 			else {
 				// disable both decoders to set all 1 for this column
-				PORTD = 128;
+				PORTD = (1<<PORTD7);
 			}
 		}
 	}
@@ -216,8 +226,14 @@ void initGame() {
 /* initialize all ports */
 void init() {
 	DDRB = 0xFF; // matrix row
-	DDRD = 0b11111011; // matrix column
-	DDRC = 0xFF; // analog mux (joystick) selection bits
+	DDRD = 0xFF; 
+	/*
+		matrix column from D3-D7
+		D3-D5 : Decoder input bits
+		D6 : Extension between two active-low decoders
+		D7 : For setting off all column values
+	*/
+	DDRC = 0xFF; // analog mux (joystick) selection bits?
 	// TODO: set up other ports
 	uart_init();
 	_delay_ms(1000);

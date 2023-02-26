@@ -19,11 +19,16 @@ int playerScores[5];
 volatile int gameState = 0;
 int winner[5]; // all the winners (there can be tie)
 volatile int winnerCnt = 0;
+volatile int beforeGame = 1;
 
 int tone_pin = 8;
 
 unsigned int reload = 0xF424; // every 1 second
 volatile int count;
+
+char welcome_text[20] = "Welcome To";
+char game_name_upper[20] = "Maguire In";
+char game_name_lower[20] = "The Middle";
 
 ISR(TIMER1_COMPA_vect)
 {
@@ -197,66 +202,102 @@ void loop() {
     }
     
     lcd.setCursor(0, 0);
-    lcd.print("Maguire: ");
+    lcd.print("Maguire:");
 
-    lcd.setCursor(10, 0);
+    lcd.setCursor(9, 0);
     lcd.print((gameState>>1));    
     
     lcd.setCursor(0, 1);
-    lcd.print("Score: ");
+    lcd.print("Score:");
 
-    lcd.setCursor(8, 1);
+    lcd.setCursor(7, 1);
     lcd.print(playerScores[(gameState>>1)]);
         
     if (n != 0 && ch == 's') {
       playerScores[(gameState>>1)]++;
-      tone(tone_pin, 1300, 300); // temporarily turn off sound
+      tone(tone_pin, 1300, 300); 
     }  
-    lcd.setCursor(12, 0);
+    lcd.setCursor(11, 0);
       lcd.print("Time:");
       int countCopy = count;
       if (countCopy == 9) {
-        lcd.setCursor(13, 1);
+        lcd.setCursor(12, 1);
         lcd.print(" ");    
       } 
-      lcd.setCursor(12, 1);    
+      lcd.setCursor(11, 1);    
       lcd.print(countCopy);     
   } 
   else {
     if (gameState == 10) {
       lcd.setCursor(1, 0);
       lcd.print("Game has ended!");
-      lcd.setCursor(1, 1);
+      delay(1000);
+      // lcd.setCursor(1, 0);
       if (winnerCnt > 1) {
-        lcd.setCursor(1, 1);
-        lcd.print("Tie between players "); 
-        lcd.setCursor(8, 1);
+        lcd.setCursor(1, 0);
+        lcd.print("Tie betn players"); 
+        lcd.setCursor(0, 1);
         lcd.print(winner[0]);           
         for (int i = 1; i < winnerCnt; i++) {
-          lcd.setCursor(8+2*i-1, 1);
+          lcd.setCursor(2*i-1, 1);
           lcd.print(",");
-          lcd.setCursor(8+2*i, 1);
+          lcd.setCursor(2*i, 1);
           lcd.print(winner[i]); 
         }      
       }
       else {
-        lcd.setCursor(1, 1);
-        lcd.print("Winner: Player "); 
-        lcd.setCursor(8, 1);
-        lcd.print(winner[0]);           
+        lcd.setCursor(0, 1);
+        lcd.print("Winner: Player"); 
+        lcd.setCursor(15, 0);
+        lcd.print(winner[0]); 
+        lcd.setCursor(4, 1);
+        lcd.print("Score: ");
+        lcd.setCursor(11, 1);
+        lcd.print(playerScores[winner[0]]);          
       }       
     } 
-    else if (gameState == 0) {
-        lcd.setCursor(0, 0);
-        lcd.print("Welcome to Maguire In The Middle");    
-        for(int PositionCount=0;PositionCount<30; PositionCount++) {//loop for scrolling the LCD text
-          lcd.scrollDisplayLeft();//builtin command to scroll left the text
-          delay(400);// delay of 150 msec
-        }               
+    else if (gameState == 0 && beforeGame) {
+        unsigned int i=0;
+        lcd.setCursor(3, 0);
+        
+        while(welcome_text[i]!='\0'){
+          lcd.print(welcome_text[i]);
+          delay(200);
+          i++;          
+        } 
+        delay(500);
+        // clear screen
+        lcd.clear();  
+
+        i=0;
+        lcd.setCursor(3, 0);
+        
+        while(game_name_upper[i]!='\0'){
+          lcd.print(game_name_upper[i]);
+          delay(200);         
+          i++;          
+        }  
+
+        i=0;
+        lcd.setCursor(3, 1);
+        
+        while(game_name_lower[i]!='\0'){
+          lcd.print(game_name_lower[i]);
+          delay(200);         
+          i++;          
+        } 
+        delay(1000);
+        // clear screen
+        lcd.clear(); 
+        delay(100);
+        beforeGame = 0;          
     }    
     else {
       lcd.setCursor(0, 0);
-      lcd.print("Press button!");  
+      lcd.print("Press button to"); 
+      lcd.setCursor(0, 1);
+      lcd.print("begin playing!"); 
+
       
       if(n != 0 && ch == 'a'){              
         gameState++;
