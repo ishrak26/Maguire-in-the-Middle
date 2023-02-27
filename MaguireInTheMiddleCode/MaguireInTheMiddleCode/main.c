@@ -94,12 +94,12 @@ void displaytMatrix() {
 				if (matrix[i][j] == BALL_MARK || matrix[i][j] == PADDLE_MARK) {
 					// set MUX selection bit to 1
 					// green
-					PORTC |= (1<<PORTC2);
+					PORTC |= (1<<PORTC4);
 				}
 				else {
 					// set MUX selection bit to 0
 					// red
-					PORTC &= ~(1<<PORTC2);
+					PORTC &= ~(1<<PORTC4);
 				}
 			}
 			else {
@@ -226,6 +226,11 @@ void initGame() {
 /* initialize all ports */
 void init() {
 	DDRB = 0xFF; // matrix row
+	/*
+		matrix row from B0-B3
+		B0-B2 : Decoder input bits
+		B3 : Extension between two active-high decoders
+	*/
 	DDRD = 0xFF; 
 	/*
 		matrix column from D3-D7
@@ -233,7 +238,15 @@ void init() {
 		D6 : Extension between two active-low decoders
 		D7 : For setting off all column values
 	*/
-	DDRC = 0xFF; // analog mux (joystick) selection bits?
+	DDRC = 0xFF; 
+	/*
+		C2 : Joystick x-direction selection
+		C3 : Joystick y-direction selection
+		C4 : Red/green selection 
+				0 --> red
+				1 --> green
+	*/
+	
 	// TODO: set up other ports
 	uart_init();
 	_delay_ms(1000);
