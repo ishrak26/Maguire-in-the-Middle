@@ -252,9 +252,9 @@ void init() {
 	_delay_ms(1000);
 	
 	init_paddle();
-	
 	initBall();
 	initMaguire();
+	
 	initGame();
 	initButtonInterrupt();
 	initTimer();
@@ -308,7 +308,7 @@ int main(void)
 			uart_send('g'); // want to take gyroscope input
 			if (!(gameState&1)) continue;
 			for (int i = 0; i < 2; i++) {
-				PORTC = (i<<2);
+				PORTC = (i<<PORTC2);
 				takeJoystickInput(i);
 			}
 			if (!(gameState&1)) continue;
@@ -325,7 +325,7 @@ int main(void)
 			}
 			if (!(gameState&1)) continue;
 			for (int i = 2; i < 4; i++) {
-				PORTC = (i<<2);
+				PORTC = (i<<PORTC2);
 				takeJoystickInput(i);
 			}
 		
