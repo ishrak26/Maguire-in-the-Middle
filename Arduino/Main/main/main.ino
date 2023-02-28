@@ -235,6 +235,24 @@ void loop() {
       lcd.setCursor(1, 0);
       lcd.print("Game has ended!");
       delay(1000);
+
+      // display all player scores
+      lcd.clear();
+      for (int i = 0, x0 = 0; i < 5; i++) {
+        lcd.setCursor(x0, 0);
+        lcd.print("P");
+        lcd.setCursor(x0, 1);
+        lcd.print(playerScores[i]);        
+        x0++;
+        lcd.setCursor(x0, 0); 
+        lcd.print(i); 
+        x0++;
+        lcd.setCursor(x0, 0); 
+        lcd.print(":");
+        x0 += 2;         
+      }
+      delay(5000);         
+      
       // lcd.setCursor(1, 0);
       if (winnerCnt > 1) {
         lcd.setCursor(1, 0);
