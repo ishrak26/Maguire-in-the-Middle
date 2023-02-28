@@ -395,7 +395,7 @@ int main(void)
 			moveMaguire(dx-5, dy-5);
 		}
 		else {
-			if (!winnerFound) {
+			if (gameState == 10 && !winnerFound) {
 				// find winner from arduino
 				uart_send('w');
 				_delay_ms(200);
