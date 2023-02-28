@@ -41,11 +41,11 @@ ISR(TIMER1_COMPA_vect)
 void findWinner() {
   if (winnerCnt == 0) {
     winnerCnt = 1;
-    winner[0] = playerScores[(gameState>>1)];                        
+    winner[0] = (gameState>>1);                        
   }
   else if (playerScores[(gameState>>1)] > winner[winnerCnt-1]) {
     winnerCnt = 1;
-    winner[0] = playerScores[(gameState>>1)];  
+    winner[0] = (gameState>>1);  
   }  
   else if (playerScores[(gameState>>1)] == winner[winnerCnt-1]) {
     // tie
@@ -159,6 +159,8 @@ void initialize_timer() {
 }
 
 void loop() {
+  //lcd.clear();
+  
   /* Get new sensor events with the readings */
   sensors_event_t a, g, temp;
   mpu.getEvent(&a, &g, &temp);
@@ -229,6 +231,7 @@ void loop() {
   } 
   else {
     if (gameState == 10) {
+      lcd.clear();
       lcd.setCursor(1, 0);
       lcd.print("Game has ended!");
       delay(1000);
@@ -236,7 +239,7 @@ void loop() {
       if (winnerCnt > 1) {
         lcd.setCursor(1, 0);
         lcd.print("Tie betn players"); 
-        lcd.setCursor(0, 1);
+        lcd.setCursor(5, 1);
         lcd.print(winner[0]);           
         for (int i = 1; i < winnerCnt; i++) {
           lcd.setCursor(2*i-1, 1);
@@ -246,15 +249,17 @@ void loop() {
         }      
       }
       else {
-        lcd.setCursor(0, 1);
+        lcd.clear();
+        lcd.setCursor(0, 0);
         lcd.print("Winner: Player"); 
         lcd.setCursor(15, 0);
         lcd.print(winner[0]); 
-        lcd.setCursor(4, 1);
-        lcd.print("Score: ");
-        lcd.setCursor(11, 1);
+        lcd.setCursor(0, 1);
+        lcd.print("Score:");
+        lcd.setCursor(7, 1);
         lcd.print(playerScores[winner[0]]);          
-      }       
+      }  
+      delay(10000);     
     } 
     else if (gameState == 0 && beforeGame) {
         unsigned int i=0;
