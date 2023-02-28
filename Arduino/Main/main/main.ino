@@ -246,37 +246,37 @@ void loop() {
         x0++;
         lcd.setCursor(x0, 0); 
         lcd.print(i); 
-        x0++;
-        lcd.setCursor(x0, 0); 
-        lcd.print(":");
+        //x0++;
+        //lcd.setCursor(x0, 0); 
+        //lcd.print(":");
         x0 += 2;         
       }
       delay(5000);         
       
       // lcd.setCursor(1, 0);
-      if (winnerCnt > 1) {
-        lcd.setCursor(1, 0);
-        lcd.print("Tie betn players"); 
-        lcd.setCursor(5, 1);
-        lcd.print(winner[0]);           
-        for (int i = 1; i < winnerCnt; i++) {
-          lcd.setCursor(2*i-1, 1);
-          lcd.print(",");
-          lcd.setCursor(2*i, 1);
-          lcd.print(winner[i]); 
-        }      
-      }
-      else {
-        lcd.clear();
-        lcd.setCursor(0, 0);
-        lcd.print("Winner: Player"); 
-        lcd.setCursor(15, 0);
-        lcd.print(winner[0]); 
-        lcd.setCursor(0, 1);
-        lcd.print("Score:");
-        lcd.setCursor(7, 1);
-        lcd.print(playerScores[winner[0]]);          
-      }  
+      // if (winnerCnt > 1) {
+      //   lcd.setCursor(1, 0);
+      //   lcd.print("Tie betn players"); 
+      //   lcd.setCursor(5, 1);
+      //   lcd.print(winner[0]);           
+      //   for (int i = 1; i < winnerCnt; i++) {
+      //     lcd.setCursor(2*i-1, 1);
+      //     lcd.print(",");
+      //     lcd.setCursor(2*i, 1);
+      //     lcd.print(winner[i]); 
+      //   }      
+      // }
+      // else {
+      //   // lcd.clear();
+      //   // lcd.setCursor(0, 0);
+      //   // lcd.print("Winner: Player"); 
+      //   // lcd.setCursor(15, 0);
+      //   // lcd.print(winner[0]); 
+      //   // lcd.setCursor(0, 1);
+      //   // lcd.print("Score:");
+      //   // lcd.setCursor(7, 1);
+      //   // lcd.print(playerScores[winner[0]]);          
+      // }  
       delay(10000);     
     } 
     else if (gameState == 0 && beforeGame) {

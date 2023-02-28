@@ -91,7 +91,7 @@ void displaytMatrix() {
 			if (matrix[i][j]) {
 				// make this column 0 (common anode)
 				PORTD = (j<<PORTD3);
-				if (matrix[i][j] == BALL_MARK || matrix[i][j] == PADDLE_MARK) {
+				if (matrix[i][j] == BALL_MARK || matrix[i][j] == MAGUIRE_MARK) {
 					// set MUX selection bit to 1
 					// green
 					PORTC |= (1<<PORTC4);
