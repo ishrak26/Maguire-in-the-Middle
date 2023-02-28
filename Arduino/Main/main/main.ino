@@ -30,6 +30,9 @@ char welcome_text[20] = "Welcome To";
 char game_name_upper[20] = "Maguire In";
 char game_name_lower[20] = "The Middle";
 
+volatile int gyroControl = 0;
+int winnerSentDone = 0;
+
 ISR(TIMER1_COMPA_vect)
 {
   count--;
@@ -177,6 +180,11 @@ void loop() {
   int maguire_dx , maguire_dy;
   maguire_dx = dx/31.0;
   maguire_dy = dy/31.0;
+  if (gyroControl) {
+    int tmp = maguire_dx;
+    maguire_dx = -maguire_dy;
+    maguire_dy = -tmp;        
+  }
   maguire_dx += 5;
   maguire_dy += 5;
   unsigned char dxs = maguire_dx;
@@ -191,7 +199,7 @@ void loop() {
         SUART.write(dxs);
         delay(10);
         SUART.write(dys);
-        delay(10);
+        delay(10);          
       }
   }
   
@@ -229,6 +237,20 @@ void loop() {
   } 
   else {
     if (gameState == 10) {
+      if (!winnerSentDone) {
+        if (ch == 'w') {
+          if (winnerCnt > 1) {
+            SUART.write((unsigned char)5);
+            delay(10);                       
+          } 
+          else {
+            SUART.write((unsigned char)(winner[0]));
+            delay(10);             
+          } 
+          winnerSentDone = 1;                            
+        } 
+      }
+      
       lcd.setCursor(1, 0);
       lcd.print("Game has ended!");
       delay(1000);
@@ -246,7 +268,7 @@ void loop() {
         }      
       }
       else {
-        lcd.setCursor(0, 1);
+        lcd.setCursor(0, 0);
         lcd.print("Winner: Player"); 
         lcd.setCursor(15, 0);
         lcd.print(winner[0]); 

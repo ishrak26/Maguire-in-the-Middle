@@ -16,12 +16,14 @@
 #include "joystick.h"
 #include "UART.h"
 #include "collisions.h"
+#include "static_matrix.h"
 
 unsigned char matrix[MAT_ROW][MAT_COL];
 struct Ball ball;
 struct Maguire maguire;
 int playerScores[PLAYER_NUMBER];
 volatile int overflowCount;
+int winnerFound = 0;
 int gameState;
 /*
 	0 --> initial state
@@ -91,10 +93,11 @@ void displaytMatrix() {
 			if (matrix[i][j]) {
 				// make this column 0 (common anode)
 				PORTD = (j<<PORTD3);
-				if (matrix[i][j] == BALL_MARK || matrix[i][j] == PADDLE_MARK) {
+				if (matrix[i][j] == BALL_MARK || matrix[i][j] == MAGUIRE_MARK) {
 					// set MUX selection bit to 1
 					// green
 					PORTC |= (1<<PORTC4);
+					//PORTC &= ~(1<<PORTC4);
 				}
 				else {
 					// set MUX selection bit to 0
@@ -105,6 +108,53 @@ void displaytMatrix() {
 			else {
 				// disable both decoders to set all 1 for this column
 				PORTD = (1<<PORTD7);
+			}
+			//_delay_ms(1000);
+		}
+	}
+}
+
+void setResult(unsigned char winner) {
+	// assign matrix according to winner
+	if (winner == 0) {
+		for (int i = 0; i < 16; i++) {
+			for (int j = 0; j < 16; j++) {
+				matrix[i][j] = one[i][j];
+			}
+		}
+	}
+	else if (winner == 1) {
+		for (int i = 0; i < 16; i++) {
+			for (int j = 0; j < 16; j++) {
+				matrix[i][j] = two[i][j];
+			}
+		}
+	}
+	else if (winner == 2) {
+		for (int i = 0; i < 16; i++) {
+			for (int j = 0; j < 16; j++) {
+				matrix[i][j] = three[i][j];
+			}
+		}
+	}
+	else if (winner == 3) {
+		for (int i = 0; i < 16; i++) {
+			for (int j = 0; j < 16; j++) {
+				matrix[i][j] = four[i][j];
+			}
+		}
+	}
+	else if (winner == 4) {
+		for (int i = 0; i < 16; i++) {
+			for (int j = 0; j < 16; j++) {
+				matrix[i][j] = five[i][j];
+			}
+		}
+	}
+	else if (winner == 5) {
+		for (int i = 0; i < 16; i++) {
+			for (int j = 0; j < 16; j++) {
+				matrix[i][j] = tie[i][j];
 			}
 		}
 	}
@@ -345,6 +395,19 @@ int main(void)
 			moveMaguire(dx-5, dy-5);
 		}
 		else {
+			if (!winnerFound) {
+				// find winner from arduino
+				uart_send('w');
+				_delay_ms(200);
+				for (int i = 0; i < 20; i++) {
+					displaytMatrix();
+				}
+				unsigned char winner = uart_receive();
+				for (int i = 0; i < 20; i++) {
+					displaytMatrix();
+				}
+				setResult(winner);
+			}
 			for (int i = 0; i < 20; i++) {
 				displaytMatrix();
 			}
