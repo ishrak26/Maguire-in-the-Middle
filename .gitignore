@@ -72,3 +72,11 @@ Testing/testHexFile/
 Testing/PaddleMovementCode/.vs/PaddleMovementCode/v14/.atsuo
 
 *.workspace
+
+Testing
+
+*.pdsbak
+
+*.atsln
+
+MaguireInTheMiddleCode/MaguireInTheMiddleCode/Debug
