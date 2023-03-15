@@ -21,3 +21,4 @@ The time and points are shown using a 16x2 LCD display module.
 ![](https://github.com/ishrak26/Maguire-in-the-Middle/blob/main/Circuit/ProjectFinalCkt.BMP)
 
 ## Demo Video
+[Maguire in the Middle: Demo Video](https://www.youtube.com/watch?v=NY4GrnJCqsM)
